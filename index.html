@@ -17,18 +17,23 @@
   --ink:#f5f7f4;       /* text */
   --muted:#c8d3c6;     /* muted text */
   --gold:#d4af37;      /* CGE gold */
-  --warn:#ef4444;      /* low */
-  --high:#ffb020;      /* high */
+  --warn:#ef4444;      /* flat / error */
+  --high:#ffb020;      /* sharp */
   --good:#23d36b;      /* in tune */
   --inkdim:#dfe6de;
 }
 *{box-sizing:border-box}
-html,body{height:95vh;margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif}
+html,body{
+  min-height:100svh;               /* no bottom clipping behind phone UI */
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif
+}
 body{display:flex;flex-direction:column}
 
 /* Header */
 header{
-  display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem 0.35rem;border-bottom:1px solid var(--line)
+  display:flex;align-items:center;gap:.75rem;
+  padding:.65rem .9rem .35rem;border-bottom:1px solid var(--line)
 }
 .logo{width:30px;height:30px;border-radius:8px;background:#06220e;display:grid;place-items:center;overflow:hidden}
 .logo img{width:100%;height:100%;object-fit:contain}
@@ -37,14 +42,15 @@ header{
 .lamp{width:10px;height:10px;border-radius:50%;background:#7a0000;box-shadow:0 0 0 2px rgba(0,0,0,.25)}
 .lamp.ask{background:#c98a00}
 .lamp.on{background:#23d36b}
+
 /* thin tricolour stripe under header */
-.flagbar{height:6px;width:100%;display:grid;grid-template-columns:1fr 1fr 1fr}
+.flagbar{height:4px;width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;box-shadow: 0 1px 0 rgba(0,0,0,.3) inset}
 .flagbar span:nth-child(1){background:#169b62}
 .flagbar span:nth-child(2){background:#ffffff}
 .flagbar span:nth-child(3){background:#ff883e}
 
 /* Sections */
-main{flex:1;display:flex;flex-direction:column;gap:12px;overflow:auto}
+main{flex:1;display:flex;flex-direction:column;gap:12px;overflow:auto;padding-bottom:max(14px, env(safe-area-inset-bottom))}
 section.panel{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px}
 
 .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
@@ -54,36 +60,49 @@ select,button,input[type="number"]{
 }
 button.primary{background:var(--gold);border:none;color:#2a260e;font-weight:800}
 button.ghost{background:transparent;border:1px solid var(--gold);color:var(--gold)}
-button.toggle[data-state="on"]{background:var(--warn);color:#fff;border-color:transparent}
 label{color:var(--muted);font-size:1rem}
 
 .grid{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:720px){ .grid{grid-template-columns:1.1fr .9fr} }
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.02)) , var(--card);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,.22)
+}
 .center{text-align:center}
 .small{font-size:.95rem;color:var(--inkdim)}
 
-#bars{width:100%;height:160px;background:#081e0f;border-radius:12px}
+/* Visualizer */
+#bars{
+  width:100%;height:160px;background:#081e0f;border-radius:12px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+/* Tuning status */
 .status{font-size:1.7rem;font-weight:900;margin-top:10px}
 .status.low{color:var(--warn)}
 .status.high{color:var(--high)}
 .status.good{color:var(--good)}
 
-.inst-wrap{display:flex;justify-content:center;align-items:center}
-.inst{width:min(560px,92vw);height:auto}
+/* Gauge (moving indicator) */
+#gauge{width:100%;height:90px;display:block;background:#081e0f;border-radius:12px;margin-top:10px;box-shadow: inset 0 0 0 1px rgba(255,255,255,.06)}
+.glabel{margin-top:6px;font-weight:700}
+
+/* Instrument art */
+.inst-wrap{display:flex;justify-content:center;align-items:center;padding:10px;overflow:hidden}
+.inst{width:min(520px,88vw);height:auto;max-height:220px}
+@media (min-width:768px){ .inst{ max-height:260px } }
 .hidden{display:none !important}
 
 footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:var(--muted);font-size:.95rem}
 
-/* Metronome beat balloons */
+/* Metronome */
 .beats{display:flex;gap:10px;justify-content:center;align-items:flex-end;margin-top:8px}
 .beat{width:22px;height:22px;border-radius:50%;background:#284d30;border:2px solid #325c3a;transition:transform .06s ease, background .06s ease, border-color .06s ease}
 .beat.active{background:var(--gold);border-color:#ffe28a;transform:translateY(-12px)}
 .beat.group{box-shadow:0 0 0 2px rgba(212,175,55,.35) inset}
-
-/* Dropdown grouping helper chips */
-.chip{padding:.25rem .55rem;border:1px solid var(--line);border-radius:999px;background:#0a2311;color:var(--inkdim);font-size:.9rem}
-
+.chip{padding:.25rem .55rem;border:1px solid var(--line);border-radius:999px;background:#0a2311;color:#dfe6de;font-size:.9rem}
 </style>
 </head>
 <body>
@@ -103,7 +122,7 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
   <!-- Controls -->
   <section class="panel">
     <div class="controls">
-      <!-- Single toggle for Start/Stop -->
+      <!-- Single Start/Stop toggle -->
       <button id="toggleBtn" class="primary" data-state="off">Start</button>
 
       <span class="chip">Tuning</span>
@@ -124,7 +143,7 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
           <option data-inst="bouzouki" value="D4,A3,G3,D3">GDAD (G D A D)</option>
         </optgroup>
         <optgroup label="Whistle">
-          <option data-inst="whistle" value="D5,E5,F#5,G5,A5,B5,C#6,D6">D whistle (scale)</option>
+          <option data-inst="whistle" value="D5,E5,F#5,G5,A5,B5,C#6,D6">D Whistle (scale)</option>
         </optgroup>
         <optgroup label="Other">
           <option data-inst="chromatic" value="">Chromatic (no target)</option>
@@ -139,14 +158,15 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
   <section class="grid">
     <div class="card">
       <canvas id="bars" aria-label="Audio visualizer"></canvas>
+      <canvas id="gauge" aria-label="Tuning gauge"></canvas>
       <div id="status" class="status center">Stopped</div>
       <div class="center small" id="noteLabel">Target: Chromatic</div>
     </div>
 
     <!-- Instrument silhouettes (original) -->
     <div class="card inst-wrap">
-      <!-- Mandolin-style head -->
-      <svg id="svg-mandolin" class="inst" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" aria-label="Mandolin/Fiddle">
+      <!-- Mandolin/Fiddle head -->
+      <svg id="svg-mandolin" class="inst" viewBox="0 0 680 320" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Mandolin/Fiddle">
         <path d="M60 280 C 120 240, 220 240, 320 260
                  C 420 280, 520 260, 580 220
                  C 615 195, 615 165, 595 145
@@ -162,8 +182,8 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
         </g>
       </svg>
 
-      <!-- Tenor banjo pot + short neck -->
-      <svg id="svg-tenorbanjo" class="inst hidden" viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg" aria-label="Tenor Banjo">
+      <!-- Tenor banjo -->
+      <svg id="svg-tenorbanjo" class="inst hidden" viewBox="0 0 680 360" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Tenor Banjo">
         <circle cx="240" cy="200" r="150" fill="#cfd7df" stroke="#8fa1b3" stroke-width="10"/>
         <circle cx="240" cy="200" r="130" fill="#f2f6fb" stroke="#8fa1b3" stroke-width="4"/>
         <rect x="370" y="170" width="260" height="60" rx="12" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
@@ -171,7 +191,7 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
       </svg>
 
       <!-- Guitar 3+3 -->
-      <svg id="svg-guitar" class="inst hidden" viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" aria-label="Guitar">
+      <svg id="svg-guitar" class="inst hidden" viewBox="0 0 720 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Guitar">
         <path d="M80 250 C 160 220, 260 210, 360 220
                  C 420 225, 520 210, 620 180
                  C 660 170, 660 140, 640 120
@@ -186,8 +206,8 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
         </g>
       </svg>
 
-      <!-- Bouzouki simple head -->
-      <svg id="svg-bouzouki" class="inst hidden" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" aria-label="Bouzouki">
+      <!-- Bouzouki -->
+      <svg id="svg-bouzouki" class="inst hidden" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Bouzouki">
         <path d="M70 290 C 150 250, 230 240, 330 250
                  C 430 260, 520 230, 610 190
                  C 640 175, 640 150, 620 130
@@ -202,8 +222,8 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
         </g>
       </svg>
 
-      <!-- Whistle silhouette -->
-      <svg id="svg-whistle" class="inst hidden" viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg" aria-label="Whistle">
+      <!-- Whistle -->
+      <svg id="svg-whistle" class="inst hidden" viewBox="0 0 700 120" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Whistle">
         <rect x="40" y="45" width="620" height="30" rx="8" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="5"/>
         <circle cx="140" cy="60" r="8" fill="#7d8898"/>
         <circle cx="200" cy="60" r="8" fill="#7d8898"/>
@@ -249,29 +269,79 @@ function setMic(state){ // 'off' | 'ask' | 'on'
   micText.textContent = 'Mic: ' + (state==='on'?'On':state==='ask'?'Asking…':'Off');
 }
 
-/* ---------- Visualizer (smoothed) ---------- */
+/* ---------- Visualizer (smoothed with inner inset) ---------- */
 const bars = document.getElementById('bars');
 const viz = bars.getContext('2d');
-function resizeCanvas(){ bars.width = bars.clientWidth; bars.height = bars.clientHeight; }
-addEventListener('resize', resizeCanvas, {passive:true}); resizeCanvas();
+function resizeBars(){ bars.width = bars.clientWidth; bars.height = bars.clientHeight; }
+addEventListener('resize', resizeBars, {passive:true}); resizeBars();
 let vizPrev = new Array(24).fill(0);
 function drawBars(){
   if(!analyser) return;
-  const len = analyser.frequencyBinCount, freq = new Uint8Array(len);
+  const len = analyser.frequencyBinCount;
+  const freq = new Uint8Array(len);
   analyser.getByteFrequencyData(freq);
-  const bands = 24, step = Math.floor(len / bands), w = bars.width/(bands*1.15), gap=w*0.15, hMax = bars.height-10;
+
+  const inset = 12;
+  const availW = bars.width  - inset*2;
+  const availH = bars.height - inset*2;
+  const bands  = 24;
+  const step   = Math.max(1, Math.floor(len / bands));
+  const w      = availW / (bands*1.15);
+  const gap    = w*0.15;
+  const hMax   = availH;
+
   viz.clearRect(0,0,bars.width,bars.height);
   for(let i=0;i<bands;i++){
     const v = freq[i*step]/255;
-    const smooth = vizPrev[i]*0.82 + v*0.18;   // stable
+    const smooth = vizPrev[i]*0.82 + v*0.18;
     vizPrev[i] = smooth;
-    const h = smooth * hMax, x = i*(w+gap)+gap/2, y = bars.height - h;
-    viz.fillStyle = '#d4af37'; viz.fillRect(x,y,w,h);
+    const h = smooth * hMax;
+    const x = inset + i*(w+gap)+gap/2;
+    const y = inset + (hMax - h);
+    viz.fillStyle = '#d4af37';
+    viz.fillRect(x,y,w,h);
   }
   raf = requestAnimationFrame(drawBars);
 }
 
-/* ---------- Pitch detection (gated + averaged) ---------- */
+/* ---------- Gauge (moving cents indicator) ---------- */
+const gauge = document.getElementById('gauge');
+const gctx = gauge.getContext('2d');
+function resizeGauge(){ gauge.width = gauge.clientWidth; gauge.height = gauge.clientHeight; drawGauge(null); }
+addEventListener('resize', resizeGauge, {passive:true}); resizeGauge();
+
+function drawGauge(cents){
+  const w=gauge.width, h=gauge.height;
+  gctx.clearRect(0,0,w,h);
+  const inset=16, railY=h/2+8, railW=w-inset*2;
+
+  // rail
+  gctx.fillStyle='#0c331a';
+  gctx.fillRect(inset, railY-10, railW, 20);
+  gctx.strokeStyle='rgba(255,255,255,.15)';
+  gctx.strokeRect(inset, railY-10, railW, 20);
+
+  // ticks (-50..50)
+  gctx.fillStyle='rgba(255,255,255,.25)';
+  gctx.textAlign='center';
+  gctx.font='12px system-ui';
+  for(let c=-50;c<=50;c+=10){
+    const x = inset + (c+50)/100 * railW;
+    gctx.fillRect(x, railY-14, 2, 28);
+    if(c%20===0) gctx.fillText(c, x, railY-22);
+  }
+
+  // pointer
+  let x = inset + (Math.max(-50, Math.min(50, (cents??0)))+50)/100 * railW;
+  const inTune = cents!=null && Math.abs(cents) < 7;
+  gctx.beginPath();
+  gctx.arc(x, railY, 12, 0, Math.PI*2);
+  gctx.fillStyle = inTune ? '#23d36b' : (cents==null ? '#3a4f42' : (cents<0 ? '#ef4444' : '#ffb020'));
+  gctx.fill();
+  gctx.lineWidth=3; gctx.strokeStyle='rgba(0,0,0,.35)'; gctx.stroke();
+}
+
+/* ---------- Pitch detection (gated + averaged + closest target) ---------- */
 let audioCtx, analyser, mediaStream, raf;
 let floatBuf, avgWindow=[];
 const AVG_SIZE=6, ENERGY_GATE=0.010, STABILITY_CENTS=7, UPDATE_HZ=12;
@@ -299,21 +369,18 @@ function autoCorrelate(buf, sr){
 
 function setStatus(text, cls){ statusEl.className='status center '+(cls||''); statusEl.textContent=text; }
 
-/* Choose closest target from set (not just first string) */
+/* Choose closest target note from the selected set */
 let targetSet = null; // array of {name,midi}
-function chooseClosestTarget(f){
-  if(!targetSet || !f) return null;
-  const note = freqToNote(f);
-  // nearest by cents
-  let best = null, bestAbs = 1e9;
+function closestTarget(freq){
+  if(!targetSet) return null;
+  let best=null, bestAbs=1e9;
   for(const t of targetSet){
-    const cents = Math.abs(centsOff(f, t.midi));
-    if(cents < bestAbs){ bestAbs = cents; best = t; }
+    const abs = Math.abs(centsOff(freq, t.midi));
+    if(abs<bestAbs){ bestAbs=abs; best=t; }
   }
-  return best || {name:note.name, midi:note.midi};
+  return best;
 }
 
-let lastUpdateTime=0;
 function updatePitch(){
   if(!analyser) return;
   const size=2048; if(!floatBuf||floatBuf.length!==size) floatBuf=new Float32Array(size);
@@ -322,16 +389,34 @@ function updatePitch(){
   const now=performance.now(); if(now-lastUpdate<(1000/UPDATE_HZ)){ requestAnimationFrame(updatePitch); return; }
   lastUpdate=now;
 
-  if(freq===-1){ setStatus('Listening…',''); requestAnimationFrame(updatePitch); return; }
+  if(freq===-1){
+    setStatus('Listening…','');
+    drawGauge(null);
+    requestAnimationFrame(updatePitch);
+    return;
+  }
+
   avgWindow.push(freq); if(avgWindow.length>AVG_SIZE) avgWindow.shift();
   const f = avgWindow.reduce((a,b)=>a+b,0)/avgWindow.length;
 
-  if(!targetSet){ const n=freqToNote(f); setStatus('Play a note — '+n.name,''); }
-  else{
-    const tgt = chooseClosestTarget(f);
-    const cents=centsOff(f, tgt.midi), a=Math.abs(cents);
-    if(a<STABILITY_CENTS){ setStatus('In Tune','good'); if(document.getElementById('vibrateToggle').checked && navigator.vibrate) navigator.vibrate(25); }
-    else if(cents<0){ setStatus('Too Low','low'); } else { setStatus('Too High','high'); }
+  if(!targetSet){
+    const n=freqToNote(f);
+    setStatus('Play a note — '+n.name,'');
+    drawGauge(0);
+  }else{
+    const tgt = closestTarget(f) || freqToNote(f);
+    const cents = centsOff(f, tgt.midi);
+    const abs   = Math.abs(cents);
+
+    drawGauge(Math.max(-50, Math.min(50, cents)));  // move the indicator
+    if(abs < STABILITY_CENTS){
+      setStatus('Perfect Pitch','good');            // exact text requested
+      if(document.getElementById('vibrateToggle').checked && navigator.vibrate) navigator.vibrate(25);
+    }else if(cents < 0){
+      setStatus('Too Low','low');
+    }else{
+      setStatus('Too High','high');
+    }
   }
   requestAnimationFrame(updatePitch);
 }
@@ -360,6 +445,7 @@ function stopTuner(){
   if(mediaStream){ mediaStream.getTracks().forEach(t=>t.stop()); mediaStream=null; }
   if(audioCtx){ audioCtx.close(); audioCtx=null; }
   setMic('off'); setStatus('Stopped','');
+  drawGauge(0);
   toggleBtn.textContent='Start'; toggleBtn.dataset.state='off';
 }
 toggleBtn.addEventListener('click',()=> (toggleBtn.dataset.state==='on'? stopTuner() : startTuner()) );
@@ -407,7 +493,6 @@ function renderBeats(){
   for(let i=0;i<beatTotal;i++){
     const b=document.createElement('div');
     b.className='beat';
-    // group accents for compound meters
     if(['6/8','9/8','12/8'].includes(tsSel.value) && (i%3===0)) b.classList.add('group');
     if(['2/4','3/4','4/4'].includes(tsSel.value) && i===0) b.classList.add('group');
     beatsWrap.appendChild(b);
@@ -417,7 +502,7 @@ renderBeats();
 tsSel.addEventListener('change', renderBeats);
 
 function metroClick(){
-  // audio (local WebAudio click)
+  // Audio (local WebAudio)
   const t = metroCtx.currentTime;
   const osc = metroCtx.createOscillator();
   const g = metroCtx.createGain();
@@ -430,7 +515,7 @@ function metroClick(){
   osc.connect(g).connect(metroGain).connect(metroCtx.destination);
   osc.start(t); osc.stop(t + 0.08);
 
-  // visual
+  // Visual bounce
   const nodes=[...beatsWrap.children];
   nodes.forEach(n=>n.classList.remove('active'));
   if(nodes[beatIndex]) nodes[beatIndex].classList.add('active');
@@ -451,7 +536,6 @@ function startMetronome(){
 function stopMetronome(){
   if(metroTimer) clearInterval(metroTimer), metroTimer=null;
   if(metroCtx) metroCtx.close(), metroCtx=null;
-  // clear visuals
   [...beatsWrap.children].forEach(n=>n.classList.remove('active'));
   metroToggle.textContent='Start'; metroToggle.dataset.state='off';
 }
