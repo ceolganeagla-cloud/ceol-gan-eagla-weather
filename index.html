@@ -4,63 +4,67 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Ceol Gan Eagla — Tuner</title>
-
-<meta name="theme-color" content="#0b2e13">
+<meta name="theme-color" content="#08260f">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-
 <style>
 :root{
-  /* Ceol Gan Eagla palette */
-  --bg:#0b2e13;          /* deep green */
-  --panel:#0f3a18;       /* darker green panel */
-  --card:#0a2b12;        /* card */
-  --line:#174f24;        /* subtle border */
-  --ink:#f5f7f4;         /* main text */
-  --muted:#c8d3c6;       /* muted text */
-  --gold:#d4af37;        /* CGE gold */
-  --warn:#ef4444;        /* too low / errors */
-  --high:#ffb020;        /* too high */
-  --good:#23d36b;        /* in tune */
+  --bg:#08260f;        /* deep CGE green */
+  --panel:#0d3117;     /* panel */
+  --card:#0a2a14;      /* card */
+  --line:#174f24;      /* border */
+  --ink:#f5f7f4;       /* text */
+  --muted:#c8d3c6;     /* muted text */
+  --gold:#d4af37;      /* CGE gold */
+  --warn:#ef4444;      /* low */
+  --high:#ffb020;      /* high */
+  --good:#23d36b;      /* in tune */
+  --inkdim:#dfe6de;
 }
 *{box-sizing:border-box}
 html,body{height:95vh;margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif}
 body{display:flex;flex-direction:column}
 
-/* Header with logo + mic indicator */
+/* Header */
 header{
-  background:linear-gradient(90deg,#169b62 0 14%,#ffffff 14% 28%,#ff883e 28% 42%, var(--bg) 42%);
-  display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;border-bottom:1px solid var(--line)
+  display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem 0.35rem;border-bottom:1px solid var(--line)
 }
-.logo{width:28px;height:28px;border-radius:6px;background:#06220e;display:grid;place-items:center;overflow:hidden}
+.logo{width:30px;height:30px;border-radius:8px;background:#06220e;display:grid;place-items:center;overflow:hidden}
 .logo img{width:100%;height:100%;object-fit:contain}
 .title{font-weight:800;letter-spacing:.2px}
 .mic{margin-left:auto;display:flex;align-items:center;gap:.45rem;font-weight:700}
 .lamp{width:10px;height:10px;border-radius:50%;background:#7a0000;box-shadow:0 0 0 2px rgba(0,0,0,.25)}
 .lamp.ask{background:#c98a00}
 .lamp.on{background:#23d36b}
+/* thin tricolour stripe under header */
+.flagbar{height:6px;width:100%;display:grid;grid-template-columns:1fr 1fr 1fr}
+.flagbar span:nth-child(1){background:#169b62}
+.flagbar span:nth-child(2){background:#ffffff}
+.flagbar span:nth-child(3){background:#ff883e}
 
 /* Sections */
 main{flex:1;display:flex;flex-direction:column;gap:12px;overflow:auto}
 section.panel{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px}
-.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 select,button,input[type="number"]{
   background:#0a2311;border:1px solid var(--line);color:var(--ink);
-  padding:.55rem .7rem;border-radius:12px;font-size:1.05rem
+  padding:.6rem .8rem;border-radius:12px;font-size:1.06rem
 }
 button.primary{background:var(--gold);border:none;color:#2a260e;font-weight:800}
 button.ghost{background:transparent;border:1px solid var(--gold);color:var(--gold)}
+button.toggle[data-state="on"]{background:var(--warn);color:#fff;border-color:transparent}
 label{color:var(--muted);font-size:1rem}
 
 .grid{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:640px){ .grid{grid-template-columns:1.1fr .9fr} }
+@media(min-width:720px){ .grid{grid-template-columns:1.1fr .9fr} }
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .center{text-align:center}
-.small{font-size:.95rem;color:var(--muted)}
+.small{font-size:.95rem;color:var(--inkdim)}
 
 #bars{width:100%;height:160px;background:#081e0f;border-radius:12px}
-.status{font-size:1.6rem;font-weight:800;margin-top:10px}
+.status{font-size:1.7rem;font-weight:900;margin-top:10px}
 .status.low{color:var(--warn)}
 .status.high{color:var(--high)}
 .status.good{color:var(--good)}
@@ -70,33 +74,61 @@ label{color:var(--muted);font-size:1rem}
 .hidden{display:none !important}
 
 footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:var(--muted);font-size:.95rem}
+
+/* Metronome beat balloons */
+.beats{display:flex;gap:10px;justify-content:center;align-items:flex-end;margin-top:8px}
+.beat{width:22px;height:22px;border-radius:50%;background:#284d30;border:2px solid #325c3a;transition:transform .06s ease, background .06s ease, border-color .06s ease}
+.beat.active{background:var(--gold);border-color:#ffe28a;transform:translateY(-12px)}
+.beat.group{box-shadow:0 0 0 2px rgba(212,175,55,.35) inset}
+
+/* Dropdown grouping helper chips */
+.chip{padding:.25rem .55rem;border:1px solid var(--line);border-radius:999px;background:#0a2311;color:var(--inkdim);font-size:.9rem}
+
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">
-    <!-- Supply your own file: icons/logo.png -->
+    <!-- Put your logo at icons/logo.png -->
     <img src="icons/logo.png" alt="Ceol Gan Eagla logo"
          onerror="this.replaceWith(Object.assign(document.createElement('div'),{textContent:'CGE',style:'font-weight:900;color:#d4af37;'}))">
   </div>
   <div class="title">Ceol Gan Eagla — Tuner</div>
   <div class="mic"><div id="micLamp" class="lamp"></div><span id="micText">Mic: Off</span></div>
 </header>
+<div class="flagbar"><span></span><span></span><span></span></div>
 
 <main>
   <!-- Controls -->
   <section class="panel">
     <div class="controls">
-      <button id="startBtn" class="primary">Start</button>
-      <button id="stopBtn"  class="ghost">Stop</button>
+      <!-- Single toggle for Start/Stop -->
+      <button id="toggleBtn" class="primary" data-state="off">Start</button>
 
-      <span class="small">Tuning</span>
+      <span class="chip">Tuning</span>
       <select id="tuning">
-        <option data-inst="mandolin" value="G4,D4,A3,E3" selected>Mandolin / Tenor Banjo (G D A E)</option>
-        <option data-inst="tenorbanjo" value="C4,G3,D3,A2">Tenor Banjo (C G D A)</option>
-        <option data-inst="guitar" value="D4,G3,B3,E4">Guitar — Top 4 (D G B E)</option>
-        <option data-inst="chromatic" value="">Chromatic (no target)</option>
+        <optgroup label="Mandolin / Fiddle">
+          <option data-inst="mandolin" value="G4,D4,A4,E5">Fiddle (G D A E)</option>
+          <option data-inst="mandolin" value="G4,D4,A3,E3" selected>Mandolin / Tenor Banjo (G D A E)</option>
+        </optgroup>
+        <optgroup label="Tenor Banjo">
+          <option data-inst="tenorbanjo" value="C4,G3,D3,A2">Standard (C G D A)</option>
+          <option data-inst="tenorbanjo" value="G4,D4,A3,E3">Irish (G D A E)</option>
+        </optgroup>
+        <optgroup label="Guitar">
+          <option data-inst="guitar" value="E4,B3,G3,D3,A2,E2">Standard (E A D G B E)</option>
+          <option data-inst="guitar" value="D4,A3,G3,D3,A2,D2">DADGAD (D A D G A D)</option>
+        </optgroup>
+        <optgroup label="Bouzouki">
+          <option data-inst="bouzouki" value="D4,A3,G3,D3">GDAD (G D A D)</option>
+        </optgroup>
+        <optgroup label="Whistle">
+          <option data-inst="whistle" value="D5,E5,F#5,G5,A5,B5,C#6,D6">D whistle (scale)</option>
+        </optgroup>
+        <optgroup label="Other">
+          <option data-inst="chromatic" value="">Chromatic (no target)</option>
+        </optgroup>
       </select>
 
       <label><input type="checkbox" id="vibrateToggle"/> Vibrate on “In Tune”</label>
@@ -114,7 +146,7 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
     <!-- Instrument silhouettes (original) -->
     <div class="card inst-wrap">
       <!-- Mandolin-style head -->
-      <svg id="svg-mandolin" class="inst" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" aria-label="Mandolin">
+      <svg id="svg-mandolin" class="inst" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" aria-label="Mandolin/Fiddle">
         <path d="M60 280 C 120 240, 220 240, 320 260
                  C 420 280, 520 260, 580 220
                  C 615 195, 615 165, 595 145
@@ -153,6 +185,33 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
           <circle cx="560" cy="210" r="14"/><circle cx="590" cy="220" r="14"/><circle cx="620" cy="230" r="14"/>
         </g>
       </svg>
+
+      <!-- Bouzouki simple head -->
+      <svg id="svg-bouzouki" class="inst hidden" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" aria-label="Bouzouki">
+        <path d="M70 290 C 150 250, 230 240, 330 250
+                 C 430 260, 520 230, 610 190
+                 C 640 175, 640 150, 620 130
+                 C 600 110, 600 90, 640 80
+                 C 570 85, 420 120, 300 150
+                 C 220 170, 150 190, 110 205
+                 C 85 215, 70 230, 70 290 Z"
+              fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+        <g fill="#e6edf4">
+          <circle cx="540" cy="200" r="14"/><circle cx="570" cy="190" r="14"/>
+          <circle cx="600" cy="178" r="14"/><circle cx="540" cy="240" r="14"/>
+        </g>
+      </svg>
+
+      <!-- Whistle silhouette -->
+      <svg id="svg-whistle" class="inst hidden" viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg" aria-label="Whistle">
+        <rect x="40" y="45" width="620" height="30" rx="8" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="5"/>
+        <circle cx="140" cy="60" r="8" fill="#7d8898"/>
+        <circle cx="200" cy="60" r="8" fill="#7d8898"/>
+        <circle cx="260" cy="60" r="8" fill="#7d8898"/>
+        <circle cx="320" cy="60" r="8" fill="#7d8898"/>
+        <circle cx="380" cy="60" r="8" fill="#7d8898"/>
+        <circle cx="440" cy="60" r="8" fill="#7d8898"/>
+      </svg>
     </div>
   </section>
 
@@ -160,11 +219,20 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
   <section class="panel">
     <div class="controls">
       <strong>Metronome</strong>
-      <span class="small">BPM</span>
-      <input type="number" id="bpm" value="100" min="40" max="240" style="width:88px;text-align:center">
-      <button id="metroStart" class="primary">Start</button>
-      <button id="metroStop"  class="ghost">Stop</button>
+      <span class="chip">BPM</span>
+      <input type="number" id="bpm" value="100" min="30" max="300" style="width:88px;text-align:center">
+      <span class="chip">Time</span>
+      <select id="timesig">
+        <option value="2/4">2/4</option>
+        <option value="3/4">3/4</option>
+        <option value="4/4" selected>4/4</option>
+        <option value="6/8">6/8</option>
+        <option value="9/8">9/8</option>
+        <option value="12/8">12/8</option>
+      </select>
+      <button id="metroToggle" class="primary" data-state="off">Start</button>
     </div>
+    <div id="beats" class="beats" aria-label="Metronome beats"></div>
   </section>
 </main>
 
@@ -173,7 +241,7 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
 </footer>
 
 <script>
-/* ------- Mic indicator ------- */
+/* ---------- Mic indicator ---------- */
 const micLamp = document.getElementById('micLamp');
 const micText = document.getElementById('micText');
 function setMic(state){ // 'off' | 'ask' | 'on'
@@ -181,7 +249,7 @@ function setMic(state){ // 'off' | 'ask' | 'on'
   micText.textContent = 'Mic: ' + (state==='on'?'On':state==='ask'?'Asking…':'Off');
 }
 
-/* ------- Canvas visualizer (smoothed) ------- */
+/* ---------- Visualizer (smoothed) ---------- */
 const bars = document.getElementById('bars');
 const viz = bars.getContext('2d');
 function resizeCanvas(){ bars.width = bars.clientWidth; bars.height = bars.clientHeight; }
@@ -195,7 +263,7 @@ function drawBars(){
   viz.clearRect(0,0,bars.width,bars.height);
   for(let i=0;i<bands;i++){
     const v = freq[i*step]/255;
-    const smooth = vizPrev[i]*0.8 + v*0.2;   // no flashing
+    const smooth = vizPrev[i]*0.82 + v*0.18;   // stable
     vizPrev[i] = smooth;
     const h = smooth * hMax, x = i*(w+gap)+gap/2, y = bars.height - h;
     viz.fillStyle = '#d4af37'; viz.fillRect(x,y,w,h);
@@ -203,13 +271,12 @@ function drawBars(){
   raf = requestAnimationFrame(drawBars);
 }
 
-/* ------- Pitch detection (gated + averaged) ------- */
+/* ---------- Pitch detection (gated + averaged) ---------- */
 let audioCtx, analyser, mediaStream, raf;
 let floatBuf, avgWindow=[];
 const AVG_SIZE=6, ENERGY_GATE=0.010, STABILITY_CENTS=7, UPDATE_HZ=12;
 let lastUpdate=0;
-const statusEl = document.getElementById('status');
-const noteLabel = document.getElementById('noteLabel');
+const statusEl = document.getElementById('status'), noteLabel = document.getElementById('noteLabel');
 const A4=440, NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 
 function freqToNote(f){ const n=Math.round(12*Math.log2(f/A4))+69; return {name:NAMES[(n%12+12)%12], midi:n, oct:Math.floor(n/12)-1};}
@@ -220,22 +287,33 @@ function autoCorrelate(buf, sr){
   for(let i=0;i<SIZE;i++){ const v=buf[i]; rms+=v*v; }
   rms=Math.sqrt(rms/SIZE);
   if(rms<ENERGY_GATE) return {freq:-1, energy:rms}; // too quiet
-  // centre clip
   const CLIP=0.1; for(let i=0;i<SIZE;i++){ buf[i]=Math.abs(buf[i])<CLIP?0:buf[i]; }
-  // autocorrelation
   const c=new Float32Array(SIZE);
   for(let i=0;i<SIZE;i++){ let s=0; for(let j=0;j<SIZE-i;j++){ s+=buf[j]*buf[j+i]; } c[i]=s; }
   let d=0; while(c[d]>c[d+1]) d++; let max=-1,pos=-1;
   for(let i=d;i<SIZE;i++){ if(c[i]>max){max=c[i];pos=i;} }
   if(pos<=0) return {freq:-1, energy:rms};
-  // parabolic interp
   let T0=pos; if(T0>0&&T0<SIZE-1){ const x1=c[T0-1],x2=c[T0],x3=c[T0+1]; const a=(x1+x3-2*x2)/2, b=(x3-x1)/2; if(a) T0=T0-b/(2*a); }
   return {freq:sr/T0, energy:rms};
 }
 
 function setStatus(text, cls){ statusEl.className='status center '+(cls||''); statusEl.textContent=text; }
 
-let target=null; // first string of selected tuning
+/* Choose closest target from set (not just first string) */
+let targetSet = null; // array of {name,midi}
+function chooseClosestTarget(f){
+  if(!targetSet || !f) return null;
+  const note = freqToNote(f);
+  // nearest by cents
+  let best = null, bestAbs = 1e9;
+  for(const t of targetSet){
+    const cents = Math.abs(centsOff(f, t.midi));
+    if(cents < bestAbs){ bestAbs = cents; best = t; }
+  }
+  return best || {name:note.name, midi:note.midi};
+}
+
+let lastUpdateTime=0;
 function updatePitch(){
   if(!analyser) return;
   const size=2048; if(!floatBuf||floatBuf.length!==size) floatBuf=new Float32Array(size);
@@ -248,18 +326,19 @@ function updatePitch(){
   avgWindow.push(freq); if(avgWindow.length>AVG_SIZE) avgWindow.shift();
   const f = avgWindow.reduce((a,b)=>a+b,0)/avgWindow.length;
 
-  if(!target){ const n=freqToNote(f); setStatus('Play a note — '+n.name,''); }
+  if(!targetSet){ const n=freqToNote(f); setStatus('Play a note — '+n.name,''); }
   else{
-    const cents=centsOff(f, target.midi), a=Math.abs(cents);
+    const tgt = chooseClosestTarget(f);
+    const cents=centsOff(f, tgt.midi), a=Math.abs(cents);
     if(a<STABILITY_CENTS){ setStatus('In Tune','good'); if(document.getElementById('vibrateToggle').checked && navigator.vibrate) navigator.vibrate(25); }
     else if(cents<0){ setStatus('Too Low','low'); } else { setStatus('Too High','high'); }
   }
   requestAnimationFrame(updatePitch);
 }
 
-/* ------- Start / Stop mic (clean release) ------- */
-const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn');
-async function start(){
+/* ---------- Start/Stop toggle (tuner) ---------- */
+const toggleBtn=document.getElementById('toggleBtn');
+async function startTuner(){
   if(audioCtx) return;
   try{
     setMic('ask');
@@ -269,26 +348,33 @@ async function start(){
     const src=audioCtx.createMediaStreamSource(stream);
     analyser=audioCtx.createAnalyser(); analyser.fftSize=2048; src.connect(analyser);
     setMic('on'); drawBars(); updatePitch();
+    toggleBtn.textContent='Stop'; toggleBtn.dataset.state='on';
   }catch(e){
     setMic('off'); setStatus('Mic blocked — allow microphone in browser.','low'); console.error(e);
+    toggleBtn.textContent='Start'; toggleBtn.dataset.state='off';
   }
 }
-function stop(){
+function stopTuner(){
   if(raf) cancelAnimationFrame(raf), raf=null;
   if(analyser){ try{analyser.disconnect();}catch(e){} analyser=null; }
   if(mediaStream){ mediaStream.getTracks().forEach(t=>t.stop()); mediaStream=null; }
   if(audioCtx){ audioCtx.close(); audioCtx=null; }
   setMic('off'); setStatus('Stopped','');
+  toggleBtn.textContent='Start'; toggleBtn.dataset.state='off';
 }
-startBtn.onclick=start; stopBtn.onclick=stop;
-document.addEventListener('visibilitychange',()=>{ if(document.hidden) stop(); });
+toggleBtn.addEventListener('click',()=> (toggleBtn.dataset.state==='on'? stopTuner() : startTuner()) );
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) stopTuner(); });
 
-/* ------- Tuning + instrument swap ------- */
+/* ---------- Tuning + instrument swap ---------- */
 const tuningSel=document.getElementById('tuning');
-const instSvgs={ mandolin:document.getElementById('svg-mandolin'),
-                 tenorbanjo:document.getElementById('svg-tenorbanjo'),
-                 guitar:document.getElementById('svg-guitar'),
-                 chromatic:document.getElementById('svg-mandolin') };
+const instSvgs={
+  mandolin:document.getElementById('svg-mandolin'),
+  tenorbanjo:document.getElementById('svg-tenorbanjo'),
+  guitar:document.getElementById('svg-guitar'),
+  bouzouki:document.getElementById('svg-bouzouki'),
+  whistle:document.getElementById('svg-whistle'),
+  chromatic:document.getElementById('svg-mandolin')
+};
 function parseTuning(v){
   if(!v) return null;
   return v.split(',').map(p=>{
@@ -301,33 +387,75 @@ function parseTuning(v){
 function setInstrument(inst){ Object.keys(instSvgs).forEach(k=>instSvgs[k].classList.toggle('hidden', k!==inst)); }
 function refreshTuning(){
   const opt=tuningSel.selectedOptions[0]; const inst=opt.dataset.inst||'mandolin'; setInstrument(inst);
-  const t=parseTuning(opt.value); target=t? t[0] : null;
-  noteLabel.textContent = t? ('Target: '+t.map(x=>x.name).join(' • ')) : 'Target: Chromatic';
+  targetSet = parseTuning(opt.value);
+  noteLabel.textContent = targetSet ? ('Target: '+targetSet.map(x=>x.name).join(' • ')) : 'Target: Chromatic';
   avgWindow.length=0;
 }
 tuningSel.addEventListener('change', refreshTuning); refreshTuning();
 
-/* ------- Metronome (original, local WebAudio) ------- */
-let metroTimer, metroCtx, metroGain;
-function metroClick(){
-  const t = metroCtx.currentTime, osc = metroCtx.createOscillator(), g = metroCtx.createGain();
-  osc.type='square'; osc.frequency.value=1400;
-  g.gain.setValueAtTime(0.0001,t);
-  g.gain.exponentialRampToValueAtTime(0.6,t+0.001);
-  g.gain.exponentialRampToValueAtTime(0.0001,t+0.06);
-  osc.connect(g).connect(metroGain).connect(metroCtx.destination);
-  osc.start(t); osc.stop(t+0.07);
-}
-function startMetronome(bpm){
-  stopMetronome(); metroCtx=new (window.AudioContext||window.webkitAudioContext)(); metroGain=metroCtx.createGain(); metroGain.gain.value=0.8;
-  metroTimer=setInterval(metroClick, Math.max(100, 60000/Math.min(240,Math.max(40,bpm))));
-}
-function stopMetronome(){ if(metroTimer) clearInterval(metroTimer), metroTimer=null; if(metroCtx) metroCtx.close(), metroCtx=null; }
-document.getElementById('metroStart').onclick=()=>startMetronome(parseInt(document.getElementById('bpm').value||'100',10));
-document.getElementById('metroStop').onclick=stopMetronome;
+/* ---------- Metronome (BPM + Time Sig + bouncing balls) ---------- */
+const beatsWrap = document.getElementById('beats');
+const tsSel = document.getElementById('timesig');
+const bpmInput = document.getElementById('bpm');
+const metroToggle = document.getElementById('metroToggle');
+let metroTimer=null, metroCtx=null, metroGain=null, beatIndex=0, beatTotal=4;
 
-/* ------- PWA service worker ------- */
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(console.warn); }
+function renderBeats(){
+  beatsWrap.innerHTML='';
+  const top = parseInt(tsSel.value.split('/')[0],10);
+  beatTotal = top;
+  for(let i=0;i<beatTotal;i++){
+    const b=document.createElement('div');
+    b.className='beat';
+    // group accents for compound meters
+    if(['6/8','9/8','12/8'].includes(tsSel.value) && (i%3===0)) b.classList.add('group');
+    if(['2/4','3/4','4/4'].includes(tsSel.value) && i===0) b.classList.add('group');
+    beatsWrap.appendChild(b);
+  }
+}
+renderBeats();
+tsSel.addEventListener('change', renderBeats);
+
+function metroClick(){
+  // audio (local WebAudio click)
+  const t = metroCtx.currentTime;
+  const osc = metroCtx.createOscillator();
+  const g = metroCtx.createGain();
+  const accent = (beatIndex===0 || (['6/8','9/8','12/8'].includes(tsSel.value) && beatIndex%3===0));
+  osc.type='square';
+  osc.frequency.value = accent ? 1450 : 1000;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(accent?0.8:0.55, t + 0.001);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+  osc.connect(g).connect(metroGain).connect(metroCtx.destination);
+  osc.start(t); osc.stop(t + 0.08);
+
+  // visual
+  const nodes=[...beatsWrap.children];
+  nodes.forEach(n=>n.classList.remove('active'));
+  if(nodes[beatIndex]) nodes[beatIndex].classList.add('active');
+  beatIndex = (beatIndex + 1) % beatTotal;
+}
+
+function startMetronome(){
+  stopMetronome();
+  metroCtx = new (window.AudioContext||window.webkitAudioContext)();
+  metroGain = metroCtx.createGain();
+  metroGain.gain.value = 0.9;
+  const bpm = Math.min(300, Math.max(30, parseInt(bpmInput.value||'100',10)));
+  const interval = 60000 / bpm;
+  beatIndex = 0;
+  metroTimer = setInterval(metroClick, interval);
+  metroToggle.textContent='Stop'; metroToggle.dataset.state='on';
+}
+function stopMetronome(){
+  if(metroTimer) clearInterval(metroTimer), metroTimer=null;
+  if(metroCtx) metroCtx.close(), metroCtx=null;
+  // clear visuals
+  [...beatsWrap.children].forEach(n=>n.classList.remove('active'));
+  metroToggle.textContent='Start'; metroToggle.dataset.state='off';
+}
+metroToggle.addEventListener('click',()=> (metroToggle.dataset.state==='on'? stopMetronome() : startMetronome()));
 </script>
 </body>
 </html>
