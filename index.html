@@ -4,71 +4,65 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Ceol Gan Eagla — Tuner</title>
-
 <style>
 :root{
-  --bg:#0b0f16; --panel:#151b28; --ink:#eef3fb; --muted:#a7b2c3; --accent:#b11d26; --good:#22c55e; --warn:#ef4444; --line:#223047;
+  /* CGE brand */
+  --bg:#0b1f12;          /* deep green */
+  --panel:#0f2618;       /* darker panel */
+  --ink:#f7f9fb;         /* text */
+  --muted:#c7d3c7;
+  --gold:#d4af37;        /* accents */
+  --orange:#ff8f1f;      /* flag accent */
+  --good:#00c853;        /* in tune */
+  --warn:#ef4444;
+  --line:#183824;
 }
 *{box-sizing:border-box}
-html,body{height:95vh;margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif}
-body{display:flex;flex-direction:column;align-items:stretch}
+html,body{height:95vh;margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,Segoe UI,Roboto,Ubuntu,Arial,sans-serif}
+body{display:flex;flex-direction:column}
+
 header{
-  background:var(--accent);
-  display:flex;align-items:center;gap:.6rem;
-  padding:.7rem .9rem;font-weight:700;letter-spacing:.2px
+  background:linear-gradient(90deg,var(--orange) 0 6%, #fff 6% 12%, #169b62 12% 18%, var(--gold) 18%); 
+  display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;font-weight:800;letter-spacing:.2px
 }
-header .flag{height:14px;width:24px;border-radius:2px;display:inline-grid;grid-template-columns:1fr 1fr 1fr;overflow:hidden}
-header .flag span:nth-child(1){background:#169b62}
-header .flag span:nth-child(2){background:#fff}
-header .flag span:nth-child(3){background:#ff883e}
 header .title{flex:1}
-main{flex:1;display:flex;flex-direction:column;gap:12px;overflow:hidden}
-section.panel{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 12px}
+
+main{flex:1;display:flex;flex-direction:column;gap:12px;overflow:auto}
+section.panel{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px}
+
 .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 select,button,input[type="number"]{
-  background:#0f1420;border:1px solid var(--line);color:var(--ink);
-  padding:.55rem .7rem;border-radius:10px;font-size:1rem
+  background:#0a1a10;border:1px solid var(--line);color:var(--ink);
+  padding:.55rem .7rem;border-radius:12px;font-size:1.05rem
 }
-button.primary{background:var(--accent);border:none;font-weight:700}
-button.ghost{background:transparent}
-.toggle{display:flex;gap:6px;align-items:center}
-label{color:var(--muted);font-size:.95rem}
+button.primary{background:var(--gold);border:none;color:#231f0f;font-weight:800}
+button.ghost{background:transparent;border:1px solid var(--gold);color:var(--gold)}
 
-.grid{display:grid;grid-template-columns:1fr;gap:10px}
+.badge{color:#cdd8c9}
+
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:640px){ .grid{grid-template-columns:1.2fr .8fr} }
 
-.card{background:#0e1523;border:1px solid var(--line);border-radius:16px; padding:14px; box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.card{background:#0c1f14;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
 .center{text-align:center}
 
-#bars{width:100%;height:160px;background:#070b13;border-radius:12px}
-.status{
-  font-size:1.5rem; font-weight:700; margin-top:8px
-}
+#bars{width:100%;height:160px;background:#09180f;border-radius:12px}
+.status{font-size:1.6rem;font-weight:800;margin-top:10px}
 .status.low{color:var(--warn)}
-.status.high{color:#f59e0b}
+.status.high{color:#ffcc00}
 .status.good{color:var(--good)}
 
-.headstock-wrap{display:flex;justify-content:center;align-items:center}
-.headstock{width:min(520px,92vw);height:auto;display:block}
-.note-tag{font-weight:800;fill:#0a0f15}
-.note-circle{fill:#9aa6b8}
-.note-active{fill:var(--good)}
-
-.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
-
-footer{
-  text-align:center;color:var(--muted);font-size:.95rem;
-  border-top:1px solid var(--line);padding:10px 0;margin-top:6px
-}
-.small{font-size:.92rem}
-
+svg{display:block}
+.inst-wrap{display:flex;justify-content:center;align-items:center}
+.inst{width:min(560px,92vw);height:auto}
 .hidden{display:none !important}
+
+footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:var(--muted);font-size:.95rem}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="flag"><span></span><span></span><span></span></div>
   <div class="title">Ceol Gan Eagla — Tuner</div>
 </header>
 
@@ -77,77 +71,101 @@ footer{
   <section class="panel">
     <div class="controls">
       <button id="startBtn" class="primary">Start</button>
-      <button id="stopBtn" class="ghost">Stop</button>
+      <button id="stopBtn"  class="ghost">Stop</button>
 
-      <label for="tuning">Tuning</label>
+      <span class="badge">Tuning</span>
       <select id="tuning">
-        <option value="G4,D4,A3,E3" selected>Mandolin/Banjo — G D A E</option>
-        <option value="C4,G3,D3,A2">CGDA (Tenor Standard)</option>
-        <option value="D4,G3,B3,E4">Guitar Top 4 — D G B E</option>
-        <option value="">Chromatic (no target)</option>
+        <option data-inst="mandolin" value="G4,D4,A3,E3" selected>Mandolin / Tenor Banjo (G D A E)</option>
+        <option data-inst="tenorbanjo" value="C4,G3,D3,A2">Tenor Banjo (C G D A)</option>
+        <option data-inst="guitar" value="D4,G3,B3,E4">Guitar — Top 4 (D G B E)</option>
+        <option data-inst="chromatic" value="">Chromatic (no target)</option>
       </select>
 
-      <label class="toggle">
-        <input type="checkbox" id="vibrateToggle"/>
-        Vibrate on “In Tune”
+      <label>
+        <input type="checkbox" id="vibrateToggle"/> Vibrate on “In Tune”
       </label>
     </div>
   </section>
 
-  <!-- Bars + Status -->
+  <!-- Visual + Status -->
   <section class="grid">
     <div class="card">
       <canvas id="bars"></canvas>
       <div id="status" class="status center">Waiting…</div>
-      <div class="center small" id="noteLabel">Target: G • D • A • E</div>
+      <div class="center" id="noteLabel">Target: G • D • A • E</div>
     </div>
 
-    <!-- Original headstock SVG (not copied) -->
-    <div class="card headstock-wrap">
-      <svg class="headstock" viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" aria-label="Headstock">
-        <!-- shape -->
-        <path d="M40 300 C 120 260, 160 260, 260 280
-                 C 340 295, 420 295, 500 282
-                 C 610 265, 640 160, 650 120
-                 C 660 80, 660 50, 620 40
-                 C 540 25, 420 40, 350 60
-                 C 260 85, 160 110, 80 115
-                 C 50 118, 40 140, 40 300 Z"
-              fill="#7e8a99" stroke="#9aa6b8" stroke-width="6"/>
-        <!-- pegs -->
-        <circle cx="130" cy="220" r="16" fill="#bec8d6"/>
-        <circle cx="190" cy="180" r="16" fill="#bec8d6"/>
-        <circle cx="250" cy="150" r="16" fill="#bec8d6"/>
-        <circle cx="590" cy="210" r="16" fill="#bec8d6"/>
-        <!-- note markers -->
-        <g id="markerE">
-          <circle class="note-circle" cx="560" cy="245" r="22"/>
-          <text x="560" y="252" font-size="18" text-anchor="middle" class="note-tag" fill="#0b0f16">E</text>
+    <!-- Instruments (original silhouettes) -->
+    <div class="card inst-wrap">
+      <!-- Mandolin head (simple scroll) -->
+      <svg id="svg-mandolin" class="inst" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60 280 C 120 240, 220 240, 320 260
+                 C 420 280, 520 260, 580 220
+                 C 620 190, 620 160, 600 140
+                 C 560 110, 560 85, 610 70
+                 C 560 70, 520 60, 480 70
+                 C 410 90, 330 110, 250 130
+                 C 160 155, 100 170, 70 180
+                 C 55 190, 60 210, 60 280 Z"
+              fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+        <g fill="#d7e1ea">
+          <circle cx="175" cy="220" r="15"/><circle cx="230" cy="195" r="15"/>
+          <circle cx="285" cy="175" r="15"/><circle cx="520" cy="210" r="15"/>
         </g>
-        <g id="markerA">
-          <circle class="note-circle" cx="300" cy="115" r="22"/>
-          <text x="300" y="122" font-size="18" text-anchor="middle" class="note-tag">A</text>
+        <g id="mE"><circle cx="555" cy="235" r="22" fill="#ffdca8"/><text x="555" y="242" text-anchor="middle" font-weight="800" fill="#1a1406">E</text></g>
+        <g id="mA"><circle cx="310" cy="150" r="22" fill="#ffdca8"/><text x="310" y="157" text-anchor="middle" font-weight="800" fill="#1a1406">A</text></g>
+        <g id="mD"><circle cx="210" cy="245" r="22" fill="#ffdca8"/><text x="210" y="252" text-anchor="middle" font-weight="800" fill="#1a1406">D</text></g>
+        <g id="mG"><circle cx="95"  cy="300" r="22" fill="#ffdca8"/><text x="95"  y="307" text-anchor="middle" font-weight="800" fill="#1a1406">G</text></g>
+      </svg>
+
+      <!-- Tenor Banjo pot -->
+      <svg id="svg-tenorbanjo" class="inst hidden" viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg">
+        <!-- rim -->
+        <circle cx="240" cy="200" r="150" fill="#cfd7df" stroke="#8fa1b3" stroke-width="10"/>
+        <circle cx="240" cy="200" r="130" fill="#f2f6fb" stroke="#8fa1b3" stroke-width="4"/>
+        <!-- neck -->
+        <rect x="370" y="170" width="260" height="60" rx="12" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+        <!-- peghead -->
+        <path d="M630 160 h30 a16 16 0 0 1 16 16 v48 a16 16 0 0 1 -16 16 h-30 z" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+        <!-- markers -->
+        <g id="tE"><circle cx="610" cy="190" r="22" fill="#ffdca8"/><text x="610" y="197" text-anchor="middle" font-weight="800" fill="#1a1406">E</text></g>
+        <g id="tA"><circle cx="530" cy="200" r="22" fill="#ffdca8"/><text x="530" y="207" text-anchor="middle" font-weight="800" fill="#1a1406">A</text></g>
+        <g id="tD"><circle cx="450" cy="200" r="22" fill="#ffdca8"/><text x="450" y="207" text-anchor="middle" font-weight="800" fill="#1a1406">D</text></g>
+        <g id="tG"><circle cx="370" cy="200" r="22" fill="#ffdca8"/><text x="370" y="207" text-anchor="middle" font-weight="800" fill="#1a1406">G</text></g>
+      </svg>
+
+      <!-- Guitar 3+3 -->
+      <svg id="svg-guitar" class="inst hidden" viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg">
+        <path d="M80 250 C 160 220, 260 210, 360 220
+                 C 420 225, 520 210, 620 180
+                 C 660 170, 660 140, 640 120
+                 C 610 90, 600 60, 610 40
+                 C 560 50, 420 80, 300 110
+                 C 220 130, 150 150, 100 170
+                 C 80 180, 80 200, 80 250 Z"
+              fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+        <!-- tuners 3+3 -->
+        <g fill="#e6edf4">
+          <circle cx="560" cy="160" r="14"/><circle cx="590" cy="150" r="14"/><circle cx="620" cy="140" r="14"/>
+          <circle cx="560" cy="210" r="14"/><circle cx="590" cy="220" r="14"/><circle cx="620" cy="230" r="14"/>
         </g>
-        <g id="markerD">
-          <circle class="note-circle" cx="220" cy="260" r="22"/>
-          <text x="220" y="267" font-size="18" text-anchor="middle" class="note-tag">D</text>
-        </g>
-        <g id="markerG">
-          <circle class="note-circle" cx="90"  cy="300" r="22"/>
-          <text x="90"  y="307" font-size="18" text-anchor="middle" class="note-tag">G</text>
-        </g>
+        <!-- markers -->
+        <g id="gE"><circle cx="640" cy="125" r="22" fill="#ffdca8"/><text x="640" y="132" text-anchor="middle" font-weight="800" fill="#1a1406">E</text></g>
+        <g id="gB"><circle cx="640" cy="235" r="22" fill="#ffdca8"/><text x="640" y="242" text-anchor="middle" font-weight="800" fill="#1a1406">B</text></g>
+        <g id="gG"><circle cx="520" cy="155" r="22" fill="#ffdca8"/><text x="520" y="162" text-anchor="middle" font-weight="800" fill="#1a1406">G</text></g>
+        <g id="gD"><circle cx="520" cy="215" r="22" fill="#ffdca8"/><text x="520" y="222" text-anchor="middle" font-weight="800" fill="#1a1406">D</text></g>
       </svg>
     </div>
   </section>
 
   <!-- Metronome -->
   <section class="panel">
-    <div class="row">
+    <div class="controls">
       <strong>Metronome</strong>
-      <label for="bpm">BPM</label>
-      <input type="number" id="bpm" value="100" min="40" max="240" style="width:80px;text-align:center">
+      <span class="badge">BPM</span>
+      <input type="number" id="bpm" value="100" min="40" max="240" style="width:88px;text-align:center">
       <button id="metroStart" class="primary">Start</button>
-      <button id="metroStop" class="ghost">Stop</button>
+      <button id="metroStop"  class="ghost">Stop</button>
     </div>
   </section>
 </main>
@@ -157,206 +175,103 @@ footer{
 </footer>
 
 <script>
-/* ---------- Visualizer + Tuner (original implementation) ---------- */
-let audioCtx, analyser, dataArray, mediaStream;
-let raf, metronomeTimer;
-const bars = document.getElementById('bars');
-const ctx = bars.getContext('2d');
-const statusEl = document.getElementById('status');
-const noteLabel = document.getElementById('noteLabel');
-const startBtn = document.getElementById('startBtn');
-const stopBtn  = document.getElementById('stopBtn');
-const vibrateToggle = document.getElementById('vibrateToggle');
-
-function resizeCanvas(){
-  bars.width = bars.clientWidth;
-  bars.height = bars.clientHeight;
+/* ---- Audio + tuner ---- */
+let audioCtx, analyser, dataArray, mediaStream, raf, metronomeTimer;
+const bars = document.getElementById('bars'); const ctx = bars.getContext('2d');
+const statusEl = document.getElementById('status'); const noteLabel = document.getElementById('noteLabel');
+function resizeCanvas(){ bars.width = bars.clientWidth; bars.height = bars.clientHeight; }
+addEventListener('resize', resizeCanvas, {passive:true}); resizeCanvas();
+const A4=440, NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+function freqToNote(f){ const n=Math.round(12*Math.log2(f/A4))+69; return {name:NAMES[(n%12+12)%12], midi:n, oct:Math.floor(n/12)-1};}
+function centsOff(f, nMidi){ const nf=A4*Math.pow(2,(nMidi-69)/12); return 1200*Math.log2(f/nf); }
+function autoCorrelate(buf, sr){ let SIZE=buf.length,rms=0; for(let i=0;i<SIZE;i++){rms+=buf[i]*buf[i]} rms=Math.sqrt(rms/SIZE); if(rms<0.008)return -1;
+  let r1=0,r2=SIZE-1,th=0.2; for(let i=0;i<SIZE/2;i++){ if(Math.abs(buf[i])<th){r1=i;break}} for(let i=1;i<SIZE/2;i++){ if(Math.abs(buf[SIZE-i])<th){r2=SIZE-i;break}}
+  buf=buf.slice(r1,r2); SIZE=buf.length; const c=new Array(SIZE).fill(0);
+  for(let i=0;i<SIZE;i++){ for(let j=0;j<SIZE-i;j++){ c[i]+=buf[j]*buf[j+i] } }
+  let d=0; while(c[d]>c[d+1]) d++; let max=-1,pos=-1; for(let i=d;i<SIZE;i++){ if(c[i]>max){max=c[i];pos=i} }
+  let T0=pos; if(T0>0&&T0<SIZE-1){ const x1=c[T0-1],x2=c[T0],x3=c[T0+1]; const a=(x1+x3-2*x2)/2,b=(x3-x1)/2; if(a) T0=T0-b/(2*a); }
+  return sr/T0;
 }
-addEventListener('resize', resizeCanvas, {passive:true});
-resizeCanvas();
-
-const A4 = 440;
-const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-function freqToNoteName(f){
-  const n = Math.round(12 * Math.log2(f / A4)) + 69;
-  const name = NOTE_NAMES[(n % 12 + 12) % 12];
-  const octave = Math.floor(n/12)-1;
-  return {name, octave, midi:n};
-}
-function centsOff(f, nMidi){
-  const noteFreq = A4 * Math.pow(2, (nMidi-69)/12);
-  return 1200 * Math.log2(f/noteFreq);
-}
-
-/* lightweight auto-correlation pitch detection */
-function autoCorrelate(buf, sampleRate){
-  // Normalize
-  let SIZE = buf.length;
-  let rms = 0;
-  for (let i=0;i<SIZE;i++){ const val = buf[i]; rms += val*val; }
-  rms = Math.sqrt(rms/SIZE);
-  if (rms < 0.008) return -1; // too quiet
-
-  let r1 = 0, r2 = SIZE-1, thres = 0.2;
-  for (let i=0;i<SIZE/2;i++){ if (Math.abs(buf[i])<thres){ r1=i; break; } }
-  for (let i=1;i<SIZE/2;i++){ if (Math.abs(buf[SIZE-i])<thres){ r2=SIZE-i; break; } }
-
-  buf = buf.slice(r1, r2);
-  SIZE = buf.length;
-  const c = new Array(SIZE).fill(0);
-  for (let i=0;i<SIZE;i++){
-    for (let j=0;j<SIZE-i;j++){
-      c[i] = c[i] + buf[j]*buf[j+i];
-    }
-  }
-  let d = 0; while (c[d] > c[d+1]) d++;
-  let maxval=-1, maxpos=-1;
-  for (let i=d;i<SIZE;i++){
-    if (c[i] > maxval){ maxval = c[i]; maxpos = i; }
-  }
-  let T0 = maxpos;
-  if (T0 > 0 && T0 < SIZE-1){
-    const x1=c[T0-1], x2=c[T0], x3=c[T0+1];
-    const a = (x1 + x3 - 2*x2)/2;
-    const b = (x3 - x1)/2;
-    if (a) T0 = T0 - b/(2*a);
-  }
-  const f = sampleRate/T0;
-  return f;
-}
-
 function drawBars(){
-  if (!analyser) return;
-  const bufferLength = analyser.frequencyBinCount;
-  const freqData = new Uint8Array(bufferLength);
-  analyser.getByteFrequencyData(freqData);
-
+  if(!analyser) return;
+  const len=analyser.frequencyBinCount, freq=new Uint8Array(len);
+  analyser.getByteFrequencyData(freq);
   ctx.clearRect(0,0,bars.width,bars.height);
-  const barCount = 20;
-  const step = Math.floor(bufferLength / barCount);
-  const w = bars.width / (barCount*1.2);
-  const gap = w*0.2;
-  for (let i=0;i<barCount;i++){
-    const v = freqData[i*step]/255;
-    const h = v * (bars.height-10);
-    const x = i*(w+gap) + gap/2;
-    const y = bars.height - h;
-    ctx.fillStyle = '#9aa6b8';
-    ctx.fillRect(x,y,w,h);
-    ctx.fill();
+  const count=20, step=Math.floor(len/count), w=bars.width/(count*1.25), gap=w*0.25;
+  for(let i=0;i<count;i++){
+    const v=freq[i*step]/255, h=v*(bars.height-10), x=i*(w+gap)+gap/2, y=bars.height-h;
+    ctx.fillStyle="#ffdca8"; ctx.fillRect(x,y,w,h);
   }
-  raf = requestAnimationFrame(drawBars);
+  raf=requestAnimationFrame(drawBars);
 }
-
 let floatBuf;
-function analyzePitch(){
-  if (!analyser) return;
-  const size = 2048;
-  if (!floatBuf || floatBuf.length!==size) floatBuf = new Float32Array(size);
-  analyser.getFloatTimeDomainData(floatBuf);
-  const f = autoCorrelate(floatBuf, audioCtx.sampleRate);
-  updateStatus(f);
-  requestAnimationFrame(analyzePitch);
-}
+function analyze(){ if(!analyser) return; const size=2048; if(!floatBuf||floatBuf.length!==size) floatBuf=new Float32Array(size);
+  analyser.getFloatTimeDomainData(floatBuf); const f=autoCorrelate(floatBuf, audioCtx.sampleRate); updateStatus(f); requestAnimationFrame(analyze); }
 
-function updateMarkers(targetName){
-  ['G','D','A','E'].forEach(n=>{
-    const g = document.getElementById('marker'+n);
-    if (!g) return;
-    g.querySelector('circle').classList.toggle('note-active', n===targetName);
-  });
-}
-function setStatus(text, cls){
-  statusEl.className = 'status center ' + cls;
-  statusEl.textContent = text;
-}
-
-let currentTarget = null; // {name, midi}
+let target=null;
+function setStatus(t,cls){ statusEl.className='status center '+cls; statusEl.textContent=t; }
 function updateStatus(freq){
-  if (freq === -1){ setStatus('Listening…', ''); return; }
-  const {name, octave, midi} = freqToNoteName(freq);
-  if (!currentTarget){ // chromatic
-    setStatus('Play a note — ' + name, '');
-    updateMarkers(null);
-    return;
-  }
-  const cents = centsOff(freq, currentTarget.midi);
-  const abs = Math.abs(cents);
-  if (abs < 7){
-    setStatus('In Tune', 'good');
-    if (vibrateToggle.checked && navigator.vibrate) navigator.vibrate(30);
-  } else if (cents < 0){
-    setStatus('Too Low', 'low');
-  } else {
-    setStatus('Too High', 'high');
-  }
+  if(freq===-1){ setStatus('Listening…',''); return; }
+  const n=freqToNote(freq); if(!target){ setStatus('Play a note — '+n.name,''); return; }
+  const cents=centsOff(freq,target.midi), a=Math.abs(cents);
+  if(a<7){ setStatus('In Tune','good'); if(document.getElementById('vibrateToggle').checked && navigator.vibrate) navigator.vibrate(30); }
+  else if(cents<0){ setStatus('Too Low','low'); } else { setStatus('Too High','high'); }
 }
 
-function parseTuning(val){
-  if (!val) return null;
-  // e.g. "G4,D4,A3,E3"
-  const parts = val.split(',').map(s=>s.trim());
-  return parts.map(p=>{
-    const n = p[0].toUpperCase() + (p[1]==='#' ? '#' : '');
-    const oct = parseInt(p.replace(/[^0-9]/g,''),10);
-    const midi = (oct+1)*12 + ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'].indexOf(n);
-    return {name:n, octave:oct, midi};
-  });
-}
-
-/* init / teardown */
 async function start(){
-  if (audioCtx) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  mediaStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
-  const src = audioCtx.createMediaStreamSource(mediaStream);
-  analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 2048;
-  src.connect(analyser);
-  drawBars();
-  analyzePitch();
+  if(audioCtx) return;
+  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  mediaStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+  const src=audioCtx.createMediaStreamSource(mediaStream);
+  analyser=audioCtx.createAnalyser(); analyser.fftSize=2048; src.connect(analyser);
+  drawBars(); analyze();
 }
 function stop(){
-  if (raf) cancelAnimationFrame(raf);
-  raf = null;
-  if (analyser){ analyser.disconnect(); analyser=null; }
-  if (mediaStream){
-    mediaStream.getTracks().forEach(t=>t.stop()); // <- releases mic
-    mediaStream = null;
-  }
-  if (audioCtx){ audioCtx.close(); audioCtx=null; }
-  setStatus('Stopped', '');
+  if(raf) cancelAnimationFrame(raf); raf=null;
+  if(analyser){ analyser.disconnect(); analyser=null; }
+  if(mediaStream){ mediaStream.getTracks().forEach(t=>t.stop()); mediaStream=null; }
+  if(audioCtx){ audioCtx.close(); audioCtx=null; }
+  setStatus('Stopped','');
 }
+startBtn.onclick=start; stopBtn.onclick=stop;
 
-startBtn.onclick = start;
-stopBtn.onclick  = stop;
-
-const tuningSel = document.getElementById('tuning');
-function updateTargetLabel(){
-  const t = parseTuning(tuningSel.value);
-  currentTarget = t ? t[0] : null; // default first string as target; user plucks others, chromatic logic still works
-  noteLabel.textContent = t ? 'Target: ' + t.map(x=>x.name).join(' • ') : 'Target: Chromatic';
-}
-tuningSel.addEventListener('change', ()=>{
-  updateTargetLabel();
-  // highlight first note marker of G/D/A/E if present
-  updateMarkers(tuningSel.value ? parseTuning(tuningSel.value)[0].name : null);
-});
-updateTargetLabel();
-
-/* ---------- Metronome ---------- */
-let metroAudio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
-document.getElementById('metroStart').onclick = ()=>{
-  const bpm = Math.min(240, Math.max(40, parseInt(document.getElementById('bpm').value||'100',10)));
-  clearInterval(metronomeTimer);
-  const interval = 60000/bpm;
-  metronomeTimer = setInterval(()=>{ metroAudio.currentTime=0; metroAudio.play(); }, interval);
+/* tuning + instrument switching */
+const tuningSel=document.getElementById('tuning');
+const instSvgs={
+  mandolin: document.getElementById('svg-mandolin'),
+  tenorbanjo: document.getElementById('svg-tenorbanjo'),
+  guitar: document.getElementById('svg-guitar'),
+  chromatic: document.getElementById('svg-mandolin')
 };
-document.getElementById('metroStop').onclick = ()=> clearInterval(metronomeTimer);
+function parseTuning(v){
+  if(!v) return null;
+  return v.split(',').map(p=>{
+    const name=p[0].toUpperCase()+(p[1]==='#'?'#':'');
+    const oct=parseInt(p.replace(/[^0-9]/g,''),10);
+    const midi=(oct+1)*12+['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'].indexOf(name);
+    return {name,octave:oct,midi};
+  });
+}
+function setInstrument(inst){
+  for(const k in instSvgs){ instSvgs[k].classList.toggle('hidden', k!==inst); }
+}
+function refreshTuning(){
+  const opt=tuningSel.selectedOptions[0];
+  const inst=opt.dataset.inst; setInstrument(inst);
+  const t=parseTuning(opt.value); target=t? t[0] : null;
+  noteLabel.textContent = t? ('Target: '+t.map(x=>x.name).join(' • ')) : 'Target: Chromatic';
+}
+tuningSel.addEventListener('change', refreshTuning); refreshTuning();
 
-/* page safety */
+/* Metronome */
+let metroAudio=new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+document.getElementById('metroStart').onclick=()=>{
+  const bpm=Math.min(240,Math.max(40,parseInt(document.getElementById('bpm').value||'100',10)));
+  clearInterval(metronomeTimer); const iv=60000/bpm;
+  metronomeTimer=setInterval(()=>{ metroAudio.currentTime=0; metroAudio.play(); },iv);
+};
+document.getElementById('metroStop').onclick=()=>clearInterval(metronomeTimer);
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) stop(); });
 </script>
-
 </body>
 </html>
