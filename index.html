@@ -41,28 +41,24 @@ section.panel{background:var(--panel);border-top:1px solid var(--line);border-bo
 select,button,input[type="number"]{background:#0a2311;border:1px solid var(--line);color:var(--ink);padding:.6rem .8rem;border-radius:12px;font-size:1.06rem}
 button.primary{background:var(--gold);border:none;color:#2a260e;font-weight:800}
 label{color:var(--muted);font-size:1rem}
-.grid{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:720px){ .grid{grid-template-columns:1.1fr .9fr} }
+
+/* Always single column */
 .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.02)),var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,.22)}
 .center{text-align:center}
 .small{font-size:.95rem;color:var(--inkdim)}
 
-/* Visualizer + gauge */
-#bars{width:100%;height:160px;background:#081e0f;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-#gauge{width:100%;height:90px;display:block;background:#081e0f;border-radius:12px;margin-top:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+/* Visualizer + gauge + string line (all in first card) */
+#bars{width:100%;height:140px;background:#081e0f;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+#gauge{width:100%;height:86px;display:block;background:#081e0f;border-radius:12px;margin-top:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.info{display:flex;justify-content:center;gap:12px;margin-top:8px;flex-wrap:wrap}
+.badge{padding:.25rem .55rem;border:1px solid var(--line);border-radius:999px;background:#0a2311;color:var(--ink)}
+#stringLine{width:100%;height:64px;background:#081e0f;border-radius:12px;margin-top:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
 .status{font-size:1.7rem;font-weight:900;margin-top:10px}
 .status.low{color:var(--warn)} .status.high{color:var(--high)} .status.good{color:var(--good)}
 
-/* Note & String row */
-.info{display:flex;justify-content:center;gap:12px;margin-top:8px;flex-wrap:wrap}
-.badge{padding:.25rem .55rem;border:1px solid var(--line);border-radius:999px;background:#0a2311;color:var(--ink)}
-
-#stringLine{width:100%;height:64px;background:#081e0f;border-radius:12px;margin-top:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-
-/* Instrument */
+/* Instrument (moved below; optional) */
 .inst-wrap{display:flex;justify-content:center;align-items:center;padding:10px;overflow:hidden}
 .inst{width:min(520px,88vw);height:auto;max-height:220px}
-@media(min-width:768px){ .inst{max-height:260px} }
 .hidden{display:none !important}
 
 /* Metronome */
@@ -72,7 +68,7 @@ label{color:var(--muted);font-size:1rem}
 .beat.group{box-shadow:0 0 0 2px rgba(212,175,55,.35) inset}
 .chip{padding:.25rem .55rem;border:1px solid var(--line);border-radius:999px;background:#0a2311;color:#dfe6de;font-size:.9rem}
 
-footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:var(--muted);font-size:.95rem}
+footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:#aaa;font-size:.95rem}
 </style>
 </head>
 <body>
@@ -85,6 +81,7 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
 <div class="flagbar"><span></span><span></span><span></span></div>
 
 <main>
+  <!-- Controls -->
   <section class="panel">
     <div class="controls">
       <button id="toggleBtn" class="primary" data-state="off">Start</button>
@@ -105,9 +102,6 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
         <optgroup label="Bouzouki">
           <option data-inst="bouzouki" value="D4,A3,G3,D3">GDAD (G D A D)</option>
         </optgroup>
-        <optgroup label="Whistle">
-          <option data-inst="whistle" value="D5,E5,F#5,G5,A5,B5,C#6,D6">D Whistle (scale)</option>
-        </optgroup>
         <optgroup label="Other">
           <option data-inst="chromatic" value="">Chromatic (no target)</option>
         </optgroup>
@@ -116,80 +110,24 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
     </div>
   </section>
 
-  <section class="grid">
-    <div class="card">
-      <canvas id="bars"></canvas>
-      <canvas id="gauge"></canvas>
+  <!-- SINGLE TUNER CARD -->
+  <section class="card" style="margin:0 12px;">
+    <canvas id="bars"></canvas>
+    <canvas id="gauge"></canvas>
 
-      <div class="info">
-        <div id="noteBadge" class="badge">Note: —</div>
-        <div id="stringBadge" class="badge">String: —</div>
-      </div>
-
-      <!-- moving indicator on the active string -->
-      <canvas id="stringLine" aria-label="String indicator"></canvas>
-
-      <div id="status" class="status center">Stopped</div>
-      <div class="center small" id="noteLabel">Target: Chromatic</div>
+    <div class="info">
+      <div id="noteBadge" class="badge">Note: —</div>
+      <div id="stringBadge" class="badge">String: —</div>
     </div>
 
-    <div class="card inst-wrap">
-      <!-- Mandolin/Fiddle -->
-      <svg id="svg-mandolin" class="inst" viewBox="0 0 680 320" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-        <path d="M60 280 C 120 240, 220 240, 320 260
-                 C 420 280, 520 260, 580 220
-                 C 615 195, 615 165, 595 145
-                 C 560 115, 560 90, 605 75
-                 C 555 75, 515 65, 475 75
-                 C 405 95, 325 115, 245 135
-                 C 160 160, 100 175, 70 185
-                 C 55 195, 60 210, 60 280 Z"
-              fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
-        <g fill="#d7e1ea"><circle cx="175" cy="220" r="15"/><circle cx="230" cy="195" r="15"/><circle cx="285" cy="175" r="15"/><circle cx="520" cy="210" r="15"/></g>
-      </svg>
+    <!-- active-string line with moving indicator -->
+    <canvas id="stringLine"></canvas>
 
-      <!-- Tenor banjo -->
-      <svg id="svg-tenorbanjo" class="inst hidden" viewBox="0 0 680 360" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="240" cy="200" r="150" fill="#cfd7df" stroke="#8fa1b3" stroke-width="10"/>
-        <circle cx="240" cy="200" r="130" fill="#f2f6fb" stroke="#8fa1b3" stroke-width="4"/>
-        <rect x="370" y="170" width="260" height="60" rx="12" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
-        <path d="M630 160 h30 a16 16 0 0 1 16 16 v48 a16 16 0 0 1 -16 16 h-30 z" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
-      </svg>
-
-      <!-- Guitar -->
-      <svg id="svg-guitar" class="inst hidden" viewBox="0 0 720 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-        <path d="M80 250 C 160 220, 260 210, 360 220
-                 C 420 225, 520 210, 620 180
-                 C 660 170, 660 140, 640 120
-                 C 610 90, 600 60, 610 40
-                 C 560 50, 420 80, 300 110
-                 C 220 130, 150 150, 100 170
-                 C 80 180, 80 200, 80 250 Z"
-              fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
-        <g fill="#e6edf4"><circle cx="560" cy="160" r="14"/><circle cx="590" cy="150" r="14"/><circle cx="620" cy="140" r="14"/><circle cx="560" cy="210" r="14"/><circle cx="590" cy="220" r="14"/><circle cx="620" cy="230" r="14"/></g>
-      </svg>
-
-      <!-- Bouzouki -->
-      <svg id="svg-bouzouki" class="inst hidden" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-        <path d="M70 290 C 150 250, 230 240, 330 250
-                 C 430 260, 520 230, 610 190
-                 C 640 175, 640 150, 620 130
-                 C 600 110, 600 90, 640 80
-                 C 570 85, 420 120, 300 150
-                 C 220 170, 150 190, 110 205
-                 C 85 215, 70 230, 70 290 Z"
-              fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
-        <g fill="#e6edf4"><circle cx="540" cy="200" r="14"/><circle cx="570" cy="190" r="14"/><circle cx="600" cy="178" r="14"/><circle cx="540" cy="240" r="14"/></g>
-      </svg>
-
-      <!-- Whistle -->
-      <svg id="svg-whistle" class="inst hidden" viewBox="0 0 700 120" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-        <rect x="40" y="45" width="620" height="30" rx="8" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="5"/>
-        <circle cx="140" cy="60" r="8" fill="#7d8898"/><circle cx="200" cy="60" r="8" fill="#7d8898"/><circle cx="260" cy="60" r="8" fill="#7d8898"/><circle cx="320" cy="60" r="8" fill="#7d8898"/><circle cx="380" cy="60" r="8" fill="#7d8898"/><circle cx="440" cy="60" r="8" fill="#7d8898"/>
-      </svg>
-    </div>
+    <div id="status" class="status center">Stopped</div>
+    <div class="center small" id="noteLabel">Target: Chromatic</div>
   </section>
 
+  <!-- Metronome -->
   <section class="panel">
     <div class="controls">
       <strong>Metronome</strong>
@@ -203,36 +141,74 @@ footer{border-top:1px solid var(--line);padding:10px 0;text-align:center;color:v
     </div>
     <div id="beats" class="beats"></div>
   </section>
+
+  <!-- Instrument (optional visual, kept last so tuner stays first screen) -->
+  <section class="card inst-wrap" style="margin:0 12px;">
+    <svg id="svg-mandolin" class="inst" viewBox="0 0 680 320" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60 280 C 120 240, 220 240, 320 260
+               C 420 280, 520 260, 580 220
+               C 615 195, 615 165, 595 145
+               C 560 115, 560 90, 605 75
+               C 555 75, 515 65, 475 75
+               C 405 95, 325 115, 245 135
+               C 160 160, 100 175, 70 185
+               C 55 195, 60 210, 60 280 Z"
+            fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+      <g fill="#d7e1ea"><circle cx="175" cy="220" r="15"/><circle cx="230" cy="195" r="15"/><circle cx="285" cy="175" r="15"/><circle cx="520" cy="210" r="15"/></g>
+    </svg>
+    <svg id="svg-tenorbanjo" class="inst hidden" viewBox="0 0 680 360" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="240" cy="200" r="150" fill="#cfd7df" stroke="#8fa1b3" stroke-width="10"/>
+      <circle cx="240" cy="200" r="130" fill="#f2f6fb" stroke="#8fa1b3" stroke-width="4"/>
+      <rect x="370" y="170" width="260" height="60" rx="12" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+      <path d="M630 160 h30 a16 16 0 0 1 16 16 v48 a16 16 0 0 1 -16 16 h-30 z" fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+    </svg>
+    <svg id="svg-guitar" class="inst hidden" viewBox="0 0 720 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <path d="M80 250 C 160 220, 260 210, 360 220
+               C 420 225, 520 210, 620 180
+               C 660 170, 660 140, 640 120
+               C 610 90, 600 60, 610 40
+               C 560 50, 420 80, 300 110
+               C 220 130, 150 150, 100 170
+               C 80 180, 80 200, 80 250 Z"
+            fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+      <g fill="#e6edf4"><circle cx="560" cy="160" r="14"/><circle cx="590" cy="150" r="14"/><circle cx="620" cy="140" r="14"/><circle cx="560" cy="210" r="14"/><circle cx="590" cy="220" r="14"/><circle cx="620" cy="230" r="14"/></g>
+    </svg>
+    <svg id="svg-bouzouki" class="inst hidden" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <path d="M70 290 C 150 250, 230 240, 330 250
+               C 430 260, 520 230, 610 190
+               C 640 175, 640 150, 620 130
+               C 600 110, 600 90, 640 80
+               C 570 85, 420 120, 300 150
+               C 220 170, 150 190, 110 205
+               C 85 215, 70 230, 70 290 Z"
+            fill="#9aa6b8" stroke="#d7e1ea" stroke-width="6"/>
+      <g fill="#e6edf4"><circle cx="540" cy="200" r="14"/><circle cx="570" cy="190" r="14"/><circle cx="600" cy="178" r="14"/><circle cx="540" cy="240" r="14"/></g>
+    </svg>
+  </section>
 </main>
 
 <footer>&copy; 2025 Gearóid MacUaid — Ceol Gan Eagla · <a href="privacy.html" style="color:var(--gold)">Privacy</a></footer>
 
 <script>
-/* Mic indicator */
+/* ===== Mic indicator ===== */
 const micLamp=document.getElementById('micLamp'), micText=document.getElementById('micText');
 function setMic(s){micLamp.className='lamp'+(s==='ask'?' ask':s==='on'?' on':'');micText.textContent='Mic: '+(s==='on'?'On':s==='ask'?'Asking…':'Off');}
 
-/* Visualizer */
+/* ===== Visualizer ===== */
 const bars=document.getElementById('bars'), viz=bars.getContext('2d');
-function sizeBars(){bars.width=bars.clientWidth;bars.height=bars.clientHeight} addEventListener('resize',sizeBars,{passive:true}); sizeBars();
-let vPrev=new Array(24).fill(0);
-function drawBars(){
-  if(!analyser) return;
-  const len=analyser.frequencyBinCount, freq=new Uint8Array(len); analyser.getByteFrequencyData(freq);
+function sizeBars(){bars.width=bars.clientWidth;bars.height=bars.clientHeight}
+function drawBars(){ if(!analyser) return; const len=analyser.frequencyBinCount, freq=new Uint8Array(len); analyser.getByteFrequencyData(freq);
   const inset=12, W=bars.width-inset*2, H=bars.height-inset*2, bands=24, step=Math.max(1,Math.floor(len/bands));
-  const w=W/(bands*1.15), gap=w*0.15, hMax=H;
-  viz.clearRect(0,0,bars.width,bars.height);
-  for(let i=0;i<bands;i++){
-    const v=freq[i*step]/255, s=vPrev[i]*0.82+v*0.18; vPrev[i]=s;
-    const h=s*hMax, x=inset+i*(w+gap)+gap/2, y=inset+(hMax-h);
-    viz.fillStyle='#d4af37'; viz.fillRect(x,y,w,h);
-  }
+  const w=W/(bands*1.15), gap=w*0.15, hMax=H; viz.clearRect(0,0,bars.width,bars.height);
+  for(let i=0;i<bands;i++){ const v=freq[i*step]/255; vizPrev[i]= (vizPrev[i]??0)*0.82 + v*0.18;
+    const h=vizPrev[i]*hMax, x=inset+i*(w+gap)+gap/2, y=inset+(hMax-h); viz.fillStyle='#d4af37'; viz.fillRect(x,y,w,h); }
   raf=requestAnimationFrame(drawBars);
 }
+let vizPrev=new Array(24).fill(0);
 
-/* Gauge */
+/* ===== Gauge ===== */
 const gauge=document.getElementById('gauge'), gctx=gauge.getContext('2d');
-function sizeGauge(){gauge.width=gauge.clientWidth;gauge.height=gauge.clientHeight;drawGauge(null)} addEventListener('resize',sizeGauge,{passive:true}); sizeGauge();
+function sizeGauge(){gauge.width=gauge.clientWidth;gauge.height=gauge.clientHeight;drawGauge(null)}
 function drawGauge(cents){
   const w=gauge.width,h=gauge.height,inset=16, railY=h/2+8, railW=w-inset*2;
   gctx.clearRect(0,0,w,h);
@@ -243,39 +219,27 @@ function drawGauge(cents){
   gctx.beginPath(); gctx.arc(x,railY,12,0,Math.PI*2); gctx.fillStyle=inTune?'#23d36b':(cents==null?'#3a4f42':(cents<0?'#ef4444':'#ffb020')); gctx.fill(); gctx.lineWidth=3; gctx.strokeStyle='rgba(0,0,0,.35)'; gctx.stroke();
 }
 
-/* String line (shows active string and moving dot) */
+/* ===== String line ===== */
 const sLine=document.getElementById('stringLine'), sctx=sLine.getContext('2d');
-function sizeString(){sLine.width=sLine.clientWidth; sLine.height=sLine.clientHeight; drawString(null,null)} addEventListener('resize',sizeString,{passive:true}); sizeString();
-let stringLabels=[]; // names from tuning
-function drawString(activeName, cents){
-  const w=sLine.width,h=sLine.height,inset=16,lineY=h/2;
+function sizeString(){sLine.width=sLine.clientWidth; sLine.height=sLine.clientHeight; drawString(null,null)}
+let stringLabels=[];
+function drawString(active,cents){
+  const w=sLine.width,h=sLine.height,inset=16,y=h/2;
   sctx.clearRect(0,0,w,h);
-  // string line
   sctx.strokeStyle='#0c331a'; sctx.lineWidth=10; sctx.lineCap='round';
-  sctx.beginPath(); sctx.moveTo(inset,lineY); sctx.lineTo(w-inset,lineY); sctx.stroke();
-  sctx.lineWidth=2; sctx.strokeStyle='rgba(255,255,255,.12)'; sctx.strokeRect(inset, lineY-16, w-inset*2, 32);
-
-  // place labels evenly
-  const n=stringLabels.length||4, segment=(w-inset*2)/(Math.max(1,n-1));
+  sctx.beginPath(); sctx.moveTo(inset,y); sctx.lineTo(w-inset,y); sctx.stroke();
+  sctx.lineWidth=2; sctx.strokeStyle='rgba(255,255,255,.12)'; sctx.strokeRect(inset,y-16,w-inset*2,32);
+  const n=stringLabels.length||4, seg=(w-inset*2)/(Math.max(1,n-1));
   sctx.font='14px system-ui'; sctx.textAlign='center'; sctx.textBaseline='bottom';
-  for(let i=0;i<n;i++){
-    const x=inset+i*segment, y=lineY-18, name=stringLabels[i];
-    sctx.fillStyle = (name===activeName)?'#d4af37':'#c8d3c6';
-    sctx.fillText(name, x, y);
-  }
-
-  // indicator dot on the active string (follows cents)
-  if(activeName){
-    const i = stringLabels.indexOf(activeName); const baseX = inset + (i<0?0:i*segment);
-    const dotX = baseX + (Math.max(-50,Math.min(50,cents??0))/50) * (segment/2); // ± half segment
-    const inTune = cents!=null && Math.abs(cents)<7;
-    sctx.beginPath(); sctx.arc(dotX, lineY, 12, 0, Math.PI*2);
-    sctx.fillStyle = inTune ? '#23d36b' : (cents==null ? '#3a4f42' : (cents<0 ? '#ef4444' : '#ffb020'));
-    sctx.fill(); sctx.lineWidth=3; sctx.strokeStyle='rgba(0,0,0,.35)'; sctx.stroke();
+  for(let i=0;i<n;i++){const x=inset+i*seg; sctx.fillStyle=(stringLabels[i]===active)?'#d4af37':'#c8d3c6'; sctx.fillText(stringLabels[i]||'',x,y-18);}
+  if(active){
+    const i=stringLabels.indexOf(active), base=inset+(i<0?0:i*seg), dx=(Math.max(-50,Math.min(50,cents??0))/50)*(seg/2);
+    const inTune=cents!=null && Math.abs(cents)<7;
+    sctx.beginPath(); sctx.arc(base+dx,y,12,0,Math.PI*2); sctx.fillStyle=inTune?'#23d36b':(cents<0?'#ef4444':'#ffb020'); sctx.fill(); sctx.lineWidth=3; sctx.strokeStyle='rgba(0,0,0,.35)'; sctx.stroke();
   }
 }
 
-/* Pitch detection */
+/* ===== Pitch detection ===== */
 let audioCtx, analyser, mediaStream, raf, floatBuf, avgWindow=[];
 const AVG_SIZE=6, ENERGY_GATE=0.010, STABILITY_CENTS=7, UPDATE_HZ=12, A4=440, NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 let lastUpdate=0, targetSet=null;
@@ -333,7 +297,7 @@ async function startTuner(){
     mediaStream=stream; const src=audioCtx.createMediaStreamSource(stream);
     analyser=audioCtx.createAnalyser(); analyser.fftSize=2048; src.connect(analyser);
     setMic('on'); drawBars(); updatePitch(); toggleBtn.textContent='Stop'; toggleBtn.dataset.state='on';
-  }catch(e){ setMic('off'); setStatus('Mic blocked — allow microphone in browser.','low'); console.error(e); toggleBtn.textContent='Start'; toggleBtn.dataset.state='off'; }
+  }catch(e){ setMic('off'); setStatus('Mic blocked — allow microphone.','low'); console.error(e); toggleBtn.textContent='Start'; toggleBtn.dataset.state='off'; }
 }
 function stopTuner(){
   if(raf) cancelAnimationFrame(raf), raf=null;
@@ -348,7 +312,7 @@ document.addEventListener('visibilitychange',()=>{ if(document.hidden) stopTuner
 
 /* Tuning + instrument swap */
 const tuningSel=document.getElementById('tuning');
-const instSvgs={mandolin:document.getElementById('svg-mandolin'),tenorbanjo:document.getElementById('svg-tenorbanjo'),guitar:document.getElementById('svg-guitar'),bouzouki:document.getElementById('svg-bouzouki'),whistle:document.getElementById('svg-whistle'),chromatic:document.getElementById('svg-mandolin')};
+const instSvgs={mandolin:document.getElementById('svg-mandolin'),tenorbanjo:document.getElementById('svg-tenorbanjo'),guitar:document.getElementById('svg-guitar'),bouzouki:document.getElementById('svg-bouzouki'),chromatic:document.getElementById('svg-mandolin')};
 function parseTuning(v){ if(!v) return null; return v.split(',').map(p=>{const name=p[0].toUpperCase()+(p[1]==='#'?'#':'');const oct=parseInt(p.replace(/[^0-9]/g,''),10);const midi=(oct+1)*12+['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'].indexOf(name);return {name,octave:oct,midi};});}
 function setInstrument(inst){Object.keys(instSvgs).forEach(k=>instSvgs[k].classList.toggle('hidden',k!==inst))}
 function refreshTuning(){
@@ -357,17 +321,22 @@ function refreshTuning(){
   noteLabel.textContent=targetSet?('Target: '+stringLabels.join(' • ')):'Target: Chromatic';
   avgWindow.length=0; drawString(null,null);
 }
-tuningSel.addEventListener('change',refreshTuning); refreshTuning();
+tuningSel.addEventListener('change',refreshTuning);
 
 /* Metronome */
 const beatsWrap=document.getElementById('beats'), tsSel=document.getElementById('timesig'), bpmInput=document.getElementById('bpm'), metroToggle=document.getElementById('metroToggle');
 let metroTimer=null, metroCtx=null, metroGain=null, beatIndex=0, beatTotal=4;
 function renderBeats(){beatsWrap.innerHTML=''; const top=parseInt(tsSel.value.split('/')[0],10); beatTotal=top; for(let i=0;i<beatTotal;i++){const b=document.createElement('div'); b.className='beat'; if(['6/8','9/8','12/8'].includes(tsSel.value)&&(i%3===0)) b.classList.add('group'); if(['2/4','3/4','4/4'].includes(tsSel.value)&&i===0) b.classList.add('group'); beatsWrap.appendChild(b);}}
-renderBeats(); tsSel.addEventListener('change',renderBeats);
 function metroClick(){const t=metroCtx.currentTime,osc=metroCtx.createOscillator(),g=metroCtx.createGain(); const accent=(beatIndex===0||(['6/8','9/8','12/8'].includes(tsSel.value)&&beatIndex%3===0)); osc.type='square'; osc.frequency.value=accent?1450:1000; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(accent?0.8:0.55,t+0.001); g.gain.exponentialRampToValueAtTime(0.0001,t+0.07); osc.connect(g).connect(metroGain).connect(metroCtx.destination); osc.start(t); osc.stop(t+0.08); const nodes=[...beatsWrap.children]; nodes.forEach(n=>n.classList.remove('active')); if(nodes[beatIndex]) nodes[beatIndex].classList.add('active'); beatIndex=(beatIndex+1)%beatTotal;}
 function startMetronome(){stopMetronome(); metroCtx=new (window.AudioContext||window.webkitAudioContext)(); metroGain=metroCtx.createGain(); metroGain.gain.value=0.9; const bpm=Math.min(300,Math.max(30,parseInt(bpmInput.value||'100',10))); const interval=60000/bpm; beatIndex=0; metroTimer=setInterval(metroClick,interval); metroToggle.textContent='Stop'; metroToggle.dataset.state='on';}
 function stopMetronome(){if(metroTimer) clearInterval(metroTimer), metroTimer=null; if(metroCtx) metroCtx.close(), metroCtx=null; [...beatsWrap.children].forEach(n=>n.classList.remove('active')); metroToggle.textContent='Start'; metroToggle.dataset.state='off';}
 metroToggle.addEventListener('click',()=> (metroToggle.dataset.state==='on'? stopMetronome():startMetronome()));
+tsSel.addEventListener('change',renderBeats);
+
+/* === Init sizing and defaults === */
+function initSizes(){sizeBars(); sizeGauge(); sizeString();}
+window.addEventListener('DOMContentLoaded',()=>{ initSizes(); refreshTuning(); renderBeats(); });
+window.addEventListener('resize', initSizes, {passive:true});
 </script>
 </body>
 </html>
